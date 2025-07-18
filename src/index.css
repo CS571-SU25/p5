@@ -1,0 +1,25 @@
+#root {
+  background-color: #eee;
+  min-height: 100vh;
+  font-family: Figtree;
+  font-family: Nunito;
+  font-family: Fredoka;
+  font-weight: 200;
+  background-image: url("assets/bg.png"), linear-gradient(0deg, hsl(200, 100%, 20%), hsl(200, 100%, 5%));
+  background-size: 200px;
+}
+
+h1, h2, h3 {
+  font-weight: 400 !important;
+}
+
+#mainContainer {
+  background-color: white;
+}
+
+.piano-key {
+  background-color: white;
+  border: 2px solid #333;
+}
+
+/*# sourceMappingURL=index.css.map */

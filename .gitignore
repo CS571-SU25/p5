@@ -1,0 +1,7 @@
+node_modules/.bin/acorn
+/node_modules/
+src/assets/uw-crest.svg
+src/assets/react.svg
+src/.DS_Store
+/src/components/reference-old/
+/src/components/reference-old/auth
