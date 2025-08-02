@@ -1,5 +1,6 @@
 import React, {useRef, useEffect, useContext} from 'react'
 import VexFlow from 'vexflow'
+import PianoTrainerContext from "../components/contexts/PianoTrainerContext.js";
 
 // const VF = VexFlow.Flow
 const VF = VexFlow
@@ -17,10 +18,9 @@ export function Score({
     const container = useRef()
     const rendererRef = useRef()
 
+    const {correctColor, incorrectColor, neutralColor} = useContext(PianoTrainerContext);
+
     useEffect(() => {
-
-
-
         if (rendererRef.current == null) {
             rendererRef.current = new Renderer(
                 container.current,
@@ -82,14 +82,18 @@ export function Score({
                 switch(notes[i].correct) {
                     case "correct":
                         processedNotes[i].setStyle({
-                            fillStyle: "hsl(200, 100%, 40%",
-                            strokeStyle: "hsl(200, 100%, 40%)",
+                            // fillStyle: "hsl(200, 100%, 40%",
+                            // strokeStyle: "hsl(200, 100%, 40%)",
+                            fillStyle: correctColor,
+                            strokeStyle: correctColor,
                         })
                         break;
                     case "incorrect":
                         processedNotes[i].setStyle({
-                            fillStyle: "hsla(0, 100%, 50%, .3)",
-                            strokeStyle: "hsla(0, 100%, 50%, .3)",
+                            // fillStyle: "hsla(0, 100%, 50%, .3)",
+                            // strokeStyle: "hsla(0, 100%, 50%, .3)",
+                            fillStyle: incorrectColor,
+                            strokeStyle: incorrectColor,
                             fillOpacity: .2
                         })
                         break;

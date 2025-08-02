@@ -17,7 +17,7 @@ function SettingsSwitch(props) {
         setIncludeNaturals
     } = useContext(PianoTrainerContext);
     const toggleValue = (value) => {
-        console.log("Toggling:");
+        // console.log("Toggling:");
         console.log(props.currentValue);
         return props.toggle();
     }
@@ -27,7 +27,6 @@ function SettingsSwitch(props) {
         id={props.id}
         label={props.displayLabel}
         checked={props.currentValue}
-
         onChange={()=>{toggleValue(props.currentValue)}}
     />
 

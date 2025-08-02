@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {Container, Image, Nav, Navbar} from "react-bootstrap";
 import {Link, NavLink} from "react-router";
 
-import crest from '../../assets/uw-crest.svg'
 // import logo from '../../assets/bg.png'
 import logo from '../../assets/logo.png'
 
@@ -14,7 +13,8 @@ function PianoTrainerNavBar() {
             <Navbar.Brand as={Link} to="/">
                 <img src={logo}
                      width="48"
-                     height="48"
+                     height="24"
+                     alt={"Small stylized piano logo. Simple and cute."}
                 />
                 {/*<span>Piano Trainer</span>*/}
             </Navbar.Brand>

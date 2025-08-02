@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from "react";
-import {Button, Col, Container, Nav, Navbar, NavDropdown, Row} from "react-bootstrap";
+import {Button, Col, Container, FormCheck, Nav, Navbar, NavDropdown, Row} from "react-bootstrap";
 import {Link, Outlet, useLocation} from "react-router";
 import PianoTrainerNavBar from "../structure/PianoTrainerNavBar.jsx";
 import PianoTrainerContext from "../contexts/PianoTrainerContext.js";
@@ -9,6 +9,8 @@ import PianoKey from "../../music/PianoKey.jsx";
 import * as Tone from "tone";
 import * as synth from "tone";
 import VexFlow from "vexflow";
+import SettingsSwitch from "../utility/SettingsSwitch.jsx";
+import fire from '../../assets/fire.gif'
 
 function MainPage(props) {
 
@@ -34,26 +36,37 @@ function MainPage(props) {
     // console.log(allIncluded);
 
     const naturalNotes = [
-        {name: "C", realNote:true, noteValues: ["C"], accidental: false, keyboardKey:"A"},
-        {name: "D", realNote:true, noteValues: ["D"], accidental: false, keyboardKey:"S"},
-        {name: "E", realNote:true, noteValues: ["E"], accidental: false, keyboardKey:"D"},
-        {name: "F", realNote:true, noteValues: ["F"], accidental: false, keyboardKey:"F"},
-        {name: "G", realNote:true, noteValues: ["G"], accidental: false, keyboardKey:"G"},
-        {name: "A", realNote:true, noteValues: ["A"], accidental: false, keyboardKey:"H"},
-        {name: "B", realNote:true, noteValues: ["B"], accidental: false, keyboardKey:"J"},
+        {name: "C", realNote:true, noteValues: ["C"], accidental: false, keyboardKey:"A", tabIndex : "1"},
+        {name: "D", realNote:true, noteValues: ["D"], accidental: false, keyboardKey:"S", tabIndex : "3"},
+        {name: "E", realNote:true, noteValues: ["E"], accidental: false, keyboardKey:"D", tabIndex : "5"},
+        {name: "F", realNote:true, noteValues: ["F"], accidental: false, keyboardKey:"F", tabIndex : "6"},
+        {name: "G", realNote:true, noteValues: ["G"], accidental: false, keyboardKey:"G", tabIndex : "8"},
+        {name: "A", realNote:true, noteValues: ["A"], accidental: false, keyboardKey:"H", tabIndex : "10"},
+        {name: "B", realNote:true, noteValues: ["B"], accidental: false, keyboardKey:"J", tabIndex : "12"},
     ];
         const accidentalNotes = [
-        {name: "C#/Db", realNote:true, noteValues: ["C#","Db"], accidental: true, keyboardKey:"W"},
-        {name: "D#/Eb", realNote:true, noteValues: ["D#","Eb"], accidental: true, keyboardKey:"E"},
-        {name: "E#/Fb", realNote:false, noteValues: ["",""], accidental: true, keyboardKey:""},
-        {name: "F#/Gb", realNote:true, noteValues: ["F#","Gb"], accidental: true, keyboardKey:"T"},
-        {name: "G#/Ab", realNote:true, noteValues: ["G#","Ab"], accidental: true, keyboardKey:"Y"},
-        {name: "A#/Bb", realNote:true, noteValues: ["A#", "Bb"], accidental: true, keyboardKey:"U"},
-        {name: "B#/Cb", realNote:false, noteValues: ["B#"], accidental: true, keyboardKey:""},
+        {name: "W#/Tb", realNote:false, noteValues: ["C#","Db"], accidental: true, keyboardKey:"W", tabIndex:"-1"},
+        {name: "C#/Db", realNote:true, noteValues: ["C#","Db"], accidental: true, keyboardKey:"W", tabIndex:"2"},
+        {name: "D#/Eb", realNote:true, noteValues: ["D#","Eb"], accidental: true, keyboardKey:"E", tabIndex:"4"},
+        {name: "E#/Fb", realNote:false, noteValues: ["",""], accidental: true, keyboardKey:"", tabIndex:"-1"},
+        {name: "F#/Gb", realNote:true, noteValues: ["F#","Gb"], accidental: true, keyboardKey:"T", tabIndex:"7"},
+        {name: "G#/Ab", realNote:true, noteValues: ["G#","Ab"], accidental: true, keyboardKey:"Y", tabIndex:"9"},
+        {name: "A#/Bb", realNote:true, noteValues: ["A#", "Bb"], accidental: true, keyboardKey:"U", tabIndex:"11"},
+        {name: "B#/Cb", realNote:false, noteValues: ["B#"], accidental: true, keyboardKey:"", tabIndex:"-1"},
     ];
 
     const [pianoNotes, setPianoNotes] = useState([])
     const [guessedNotes, setGuessedNotes] = useState([]);
+
+    const [currentStreak, setCurrentStreak] = useState(0)
+    const [maxStreak, setMaxStreak] = useState(0)
+
+    const [cheatMode, setCheatMode] = useState(true)
+
+    const [transitionTime, setTransitionTime] = useState(360);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+
+    const [graderMode, setGraderMode] = useState(true);
 
     // const [includeFlats, setIncludeFlats] = useState(true);
     // const [includeSharps, setIncludeSharps] = useState(true);
@@ -77,51 +90,78 @@ function MainPage(props) {
     ])
 
     const [, forceUpdate] = useState(0);
-    const triggerRerender = () => forceUpdate(prev => prev + 1);
+
 
     const [showKeyboardKeysOnPianoKeys, setShowKeyboardKeysOnPianoKeys] = useState(true);
+    const [showNoteNamesOnPianoKeys, setShowNoteNamesOnPianoKeys] = useState(true);
+    const triggerRerender = () => forceUpdate(prev => prev + 1);
+
     let noteCount = guessedNotes.length;
 
     useEffect(() => {
+
     },[])
+
+    setTimeout(() => {
+        if(guessedNotes.length == 4) {
+            setIsTransitioning(true)
+            setGuessedNotes([])
+            let score = document.getElementById("scoreContainer").children[0]
+            // document.getElementById("scoreContainer").classList.add('blur');
+           score.classList.add('blur');
+            // document.getElementById("scoreContainer").style.animationDuration = (transitionTime/1000)+"s";
+            score.style.animationDuration = (transitionTime/1000)+"s";
+            if (checkPhrase()) {
+                setCurrentStreak(currentStreak + 1);
+                if(currentStreak>= maxStreak) {
+                    setMaxStreak(currentStreak+1)
+                }
+                Tone.start();
+                Tone.loaded().then(() => {
+                    sampler.triggerAttackRelease("F7", "300");
+                });
+            }
+            else {
+                Tone.start();
+                Tone.loaded().then(() => {
+                    sampler.triggerAttackRelease("G7", "300");
+                });
+
+            }
+            // setCurrentStreak(checkPhrase() ? currentStreak + 1 : 0);
+            // setMaxStreak((checkPhrase() && currentStreak >= maxStreak) ? currentStreak + 1 : maxStreak )
+            setTimeout(() => {
+                // document.getElementById("scoreContainer").classList.remove('blur');
+                score.classList.remove('blur');
+                setIsTransitioning(false)
+
+                randomizeNotes()
+            },transitionTime)
+
+        }
+    }, 100)
+
 
 
     const synth = new Tone.Synth().toDestination();
-
     const sampler = new Tone.Sampler({
         urls: {
             // C4: "c3.wav"
             C5: "c4.wav",
-            E8: "metronome.wav"
+            E8: "metronome.wav",
+            F7: "correct.wav",
+            G7: "error.wav"
             // C5: "c4.mp3"
         },
         release: 1,
-        baseUrl: "/audio/",
+        baseUrl: "audio/",
     })
     sampler.volume.value = -12;
     sampler.toDestination();
 
-    const resetStaff = () => {
-        let notePool = [];
-        console.log("Naturals:", includeNaturals)
-        console.log("Flats:", includeFlats)
-        console.log("Sharps:", includeSharps)
-        notePool = includeNaturals ? [...notePool, naturals] : notePool;
-        notePool = includeSharps ? [...notePool, sharps] : notePool;
-        notePool = includeFlats ? [...notePool, flats] : notePool;
-        console.log("Note pool:")
-        console.log(notePool);
-
-    }
     const doPress = (note) => {
         console.log("Doing doPress")
         console.log(note)
-        // console.log("GuessCountRef:", guessCountRef.current)
-        // let noteCount = guessCountRef.current;
-        // if (noteCount >= 4) {
-        //     noteCount = 0;
-        // }
-        // console.log("noteCount:",noteCount);
 
         console.log("GuessedNotes length: ",guessedNotes.length)
 
@@ -146,29 +186,16 @@ function MainPage(props) {
             console.log("Guesses after pushing");
             console.log(guesses);
             setGuessedNotes(guesses);
+            // if(guesses.length == 4) {
+            //     checkPhrase();
+            // }
         }
         setStaves([currentNotes])
     }
 
     // TODO:
-    // MVP:
-    // - Create state variables to track streaks
-    // - Note reset and randomizer
-    // - Note name reveal?
-    //
-    //
-    //
-    //
-    //
-    // Settings
-    // - Color picker for correct/incorrect
-    // - Bass vs Treble Clef
     //
     // About Page
-    // -
-    //
-    //
-    //
 
 
     const handleDoPress = (note) => {
@@ -191,18 +218,33 @@ function MainPage(props) {
         console.log(note);
     }
 
+    function checkPhrase() {
+        console.log("Current staves[0]");
+        console.log(staves[0]);
+        let currentNotes = staves[0];
+        for(let note in currentNotes) {
+            console.log("Current note: ")
+            console.log(currentNotes[note]);
+            if(currentNotes[note].correct === 'incorrect') {
+                setCurrentStreak(0)
+                return false;
+            }
+        }
+        return true;
+    }
+
     function randomizeNotes() {
         setStaves([staves[staves.length-1]])
-        console.log("Naturals:", includeNaturals)
-        console.log("Flats:", includeFlats)
-        console.log("Sharps:", includeSharps)
+        // console.log("Naturals:", includeNaturals)
+        // console.log("Flats:", includeFlats)
+        // console.log("Sharps:", includeSharps)
 
         let notePool = [];
         notePool = includeNaturals ? notePool.concat(naturals) : notePool;
         notePool = includeSharps ? notePool.concat(sharps) : notePool;
         notePool = includeFlats ? notePool.concat(flats) : notePool;
-        console.log("Note pool:")
-        console.log(notePool);
+        // console.log("Note pool:")
+        // console.log(notePool);
 
         let newNotes = [];
         for(let i = 0; i < 4; i++) {
@@ -211,26 +253,43 @@ function MainPage(props) {
         }
         console.log(newNotes)
         setStaves([newNotes]);
+        setGuessedNotes([])
     }
 
     return <>
         <Container id={"homeContainer"}>
         <h1>Note Trainer</h1>
-            <PianoTrainerContext.Provider value={{allNotes, doPress}}>
             <Staff staves={staves}></Staff>
+
+            <Container className={"my-2 "} style={{textAlign: "center"}}>
+                <Row className ={graderMode ? '' : "hidden"}>
+                    <Col>(Grader mode enabled) Current Note: {staves[0][Math.min(guessedNotes.length, staves[0].length-1)].noteName.split('/')[0] }</Col>
+                </Row>
+                <Row>
+                    <Col className={"streak-label"}>Current Streak: <span>{currentStreak}</span> {(currentStreak > 0)&&(currentStreak == maxStreak) ? <span><img
+                        src={fire} alt="Hot Streak" style={{height:"20px",marginTop:"-.5rem"}}/></span> : ''}</Col>
+                    <Col className={"streak-label"}>Max Streak: <span>{maxStreak}</span> {(currentStreak > 0) && (currentStreak == maxStreak) ? <span><img
+                        src={fire} alt="Hot Streak" style={{height:"20px",marginTop:"-.5rem"}}/></span> : ''}</Col>
+                </Row>
+                <Row className={graderMode ? '' : 'hidden'}>
+                    {/*{graderMode ? <Col>(Grader mode: on) Current Note: {staves[0][Math.min(guessedNotes.length, staves[0].length-1)].noteName.split('/')[0] }</Col> : ''}*/}
+                </Row>
+            </Container>
             <div id = "mainKeyboard">
                 <div className={'main-keys natural-keys'}>
                         {naturalNotes.map((note)=> {
-                            return <div key={note.name} className={'natural-note'}>
+                            return <div key={note.name} className={'natural-note'}  tabIndex={note.tabIndex}>
                                 <PianoKey
                                     noteValues={note.noteValues}
                                     accidental={note.accidental}
                                     guessedNotes={guessedNotes}
                                     doPress={doPress}
                                     playNoteAudio={playNoteAudio}
-                                    checkNote={checkNote}
+                                    isTransitioning={isTransitioning}
                                     keyboardKey={note.keyboardKey}
                                     showKeyboardKeysOnPianoKeys={showKeyboardKeysOnPianoKeys}
+                                    showNoteNamesOnPianoKeys={showNoteNamesOnPianoKeys}
+                                    tabIndex={note.tabIndex}
                                 >{note.name}</PianoKey>
                             </div>
                             })
@@ -238,33 +297,62 @@ function MainPage(props) {
                 </div>
                 <div className={'main-keys accidental-keys'}>
                         {accidentalNotes.map((note)=> {
-                            return <div key={note.name} className={note.realNote ? 'accidental-note' : 'accidental-note dummy-note'}>
+                            return <div
+                                    key={note.name}
+                                    className={note.realNote ? 'accidental-note' : 'accidental-note dummy-note'}
+                                    tabIndex={note.tabIndex}
+                            >
                                 <PianoKey
+                                    // tabindex={note.realNote ? 1 : -1}
                                     noteValues={note.noteValues}
                                     accidental={note.accidental}
                                     guessedNotes={guessedNotes}
                                     doPress={doPress}
                                     playNoteAudio={playNoteAudio}
-                                    checkNote={checkNote}
+                                    isTransitioning={isTransitioning}
                                     keyboardKey={note.keyboardKey}
                                     showKeyboardKeysOnPianoKeys={showKeyboardKeysOnPianoKeys}
+                                    showNoteNamesOnPianoKeys={showNoteNamesOnPianoKeys}
+
                                 >{note.name}</PianoKey>
                             </div>
                             })
                         }
                 </div>
             </div>
-                <Container>
-                    <Row >
-                        <Col>
-                            <Button className="me-2" title={"Options"}>Options</Button>
-                            <Button className="mx-2" title={"Reset"} onClick={randomizeNotes}>Reset</Button>
-                            <Button className="mx-2" title={"Toggle Keyboard Keys"} onClick={()=>setShowKeyboardKeysOnPianoKeys(!showKeyboardKeysOnPianoKeys)}>Toggle Keyboard Key Names</Button>
-                        </Col>
-                    </Row>
+                <Container className={"centered-container switches-container-parent"} style={{textAlign: "center"}}>
+                    <Button title={"Reset Notes"} style={{marginBottom: "2rem"}}onClick={randomizeNotes}>Generate New Phrase</Button>
+                    <Row>
+                        {/*<Col>*/}
+                        {/*    <Button className="mx-2" title={"Reset Notes"} onClick={randomizeNotes}>New Notes</Button>*/}
+                        {/*    /!*<Button className="mx-2" title={"Toggle Keyboard Keys"} onClick={()=>setShowKeyboardKeysOnPianoKeys(!showKeyboardKeysOnPianoKeys)}>Toggle Keyboard Key Names</Button>*!/*/}
+                        {/*</Col>*/}
+                    {/*</Row>*/}
+                    {/*<Row className={"switches-container-parent"}>*/}
 
+                    <div className="switches-container">
+                        <FormCheck
+                            type="switch"
+                            id={props.id}
+                            // label={"Note Names"}
+                            checked={showNoteNamesOnPianoKeys}
+                            onChange={() => {setShowNoteNamesOnPianoKeys(!showNoteNamesOnPianoKeys)}}
+                            aria-label={"Toggle note visibility for on-screen piano keyboard"}
+                        /><span>Note Names</span>
+                    </div>
+                    <div className="switches-container">
+                        <FormCheck
+                            type="switch"
+                            id={props.id}
+                            // label={"Keyboard Keys"}
+                            checked={showKeyboardKeysOnPianoKeys}
+                            onChange={() => {setShowKeyboardKeysOnPianoKeys(!showKeyboardKeysOnPianoKeys)}}
+                            aria-label={"Toggle visibility of corresponding keyboard keys for on-screen piano keyboard notes"}
+                        /><kbd>Keyboard keys</kbd>
+                    </div>
+                    </Row>
                 </Container>
-                </PianoTrainerContext.Provider>
+            <Button variant={graderMode ? "secondary" : 'outline-secondary'} className="mx-2" title={"Toggle Grader Mode"} onClick={()=>{console.log("grader mode:",graderMode);setGraderMode(!graderMode)}}>Grader Mode</Button>
     </Container>
 
 

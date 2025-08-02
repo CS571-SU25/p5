@@ -6,12 +6,16 @@ import {Button} from "react-bootstrap";
 
 function PianoKey(props) {
 
+    const {includeFlats, includeSharps,includeNaturals} = useContext(PianoTrainerContext);
     function handlePress(note, isPressed) {
-        console.log(note)
-        isPressed = true;
-        setPressed("piano-key pressed");
-        props.playNoteAudio(note.noteValues[0])
-        props.doPress(note);
+        if(!props.isTransitioning) {
+            console.log(note)
+            isPressed = true;
+            setPressed("piano-key pressed");
+            props.playNoteAudio(note.noteValues[0])
+            props.doPress(note);
+        }
+
     }
 
     function handleEnter(note) {
@@ -43,12 +47,11 @@ function PianoKey(props) {
             window.addEventListener('keydown', handleKeyDown);
             window.addEventListener('keyup', handleKeyUp);
             return () => {
-                console.log("Unmounting");
                 window.removeEventListener('keydown', handleKeyDown);
                 window.removeEventListener('keyup', handleKeyUp);
             }
         },
-            []);
+            [handleKeyDown,handleKeyUp]);
 
     const [pressed, setPressed] = useState("piano-key")
     const accidental = props.accidental;
@@ -71,8 +74,15 @@ function PianoKey(props) {
             onMouseUp={() => {
                 handleUnpress(props, isPressed)
             }}
-        >{props.showKeyboardKeysOnPianoKeys ?<kbd>{keyboardKey.toUpperCase()}</kbd> :
-            <span>{props.children}</span>}</button>
+        >
+        {props.showNoteNamesOnPianoKeys ?
+            <p>
+                {includeSharps ? props.children.split("/")[0] : ''}
+                {props.accidental && (includeSharps && includeFlats) ? '/' : ''}
+                {includeFlats ? props.children.split("/")[1] : ''}
+            </p> : '' }
+            {props.showKeyboardKeysOnPianoKeys ?<kbd>{keyboardKey.toUpperCase()}</kbd> : ''}
+        </button>
     </>
 }
 

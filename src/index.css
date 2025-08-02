@@ -1,16 +1,58 @@
 @charset "UTF-8";
 #root {
+  box-sizing: border-box;
   background-color: #eee;
   min-height: 100vh;
   font-family: Nunito;
   font-weight: 200;
-  background-image: url("assets/bg.png"), linear-gradient(0deg, hsl(200, 100%, 20%), hsl(200, 100%, 5%));
+  background-image: url("assets/bg.png"), linear-gradient(0deg, hsl(200, 100%, 20%), hsl(200, 100%, 15%));
   background-size: 200px;
   --standard-blue: hsl(200, 100%, 30%);
 }
 
+div.about-card {
+  padding: 6% 20% 6% 10%;
+  color: white;
+  background-size: cover;
+  margin-bottom: 1rem;
+}
+div.about-card:nth-of-type(1) {
+  background-image: linear-gradient(0deg, hsla(200, 100%, 20%, 0.9), hsla(200, 100%, 5%, 0.9)), url("assets/piano4.jpg");
+}
+div.about-card:nth-of-type(2) {
+  background-image: linear-gradient(0deg, hsla(30, 100%, 10%, 0.8), hsla(30, 100%, 15%, 0.8)), url("assets/piano1.jpg");
+}
+div.about-card:nth-of-type(3) {
+  background-image: linear-gradient(0deg, hsla(170, 100%, 10%, 0.9), hsla(180, 100%, 6%, 0.9)), url("assets/piano2.jpg");
+}
+div.about-card p {
+  font-size: 1.25rem;
+  line-height: 1.25;
+  margin-bottom: 1.25rem;
+}
+div.about-card a {
+  color: white;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--standard-blue);
+}
+div.about-card li, div.about-card a {
+  font-size: 1.15rem;
+}
+
+div li a {
+  color: hsl(200, 100%, 20%);
+  color: var(--standard-blue);
+  font-weight: 500;
+  text-decoration: none;
+}
+
 h1, h2, h3 {
   font-weight: 600 !important;
+}
+
+h3 {
+  font-size: 1.5rem;
 }
 
 .active {
@@ -20,6 +62,20 @@ h1, h2, h3 {
 
 .btn-primary {
   background-color: var(--standard-blue) !important;
+}
+
+.switches-container-parent {
+  padding-top: 1rem;
+  justify-content: space-around;
+  flex-flow: row wrap;
+  max-width: 600px !important;
+  margin: auto !important;
+}
+
+.switches-container {
+  margin: 1rem auto;
+  max-width: 200px;
+  flex-basis: 200px;
 }
 
 #mainNav {
@@ -51,8 +107,24 @@ h1, h2, h3 {
   content: " 🎹";
   padding-bottom: 2rem;
   margin-bottom: 2rem;
+  opacity: 0;
 }
 
+.blur {
+  animation: doBlur 0.5s ease-in-out;
+  animation-direction: alternate;
+  animation-iteration-count: 2;
+}
+
+@keyframes doBlur {
+  0% {
+    filter: blur(0px);
+  }
+  100% {
+    filter: blur(15px);
+    opacity: 0;
+  }
+}
 #scoreContainer {
   text-align: center;
   margin: 1rem auto;
@@ -67,25 +139,58 @@ h1, h2, h3 {
   text-align: center;
 }
 
+.streak-label {
+  font-weight: 400;
+  margin: 0.5rem;
+  padding-top: 1rem;
+}
+.streak-label span {
+  font-weight: 900;
+}
+
+.screen-root-container,
+#settings-root-container {
+  padding: 0 1rem;
+}
+
 #settings-container {
   border: 3px solid var(--standard-blue);
+  width: 90%;
   border-radius: 1rem;
   padding: 2rem 2rem;
+  margin: 1rem auto;
+}
+#settings-container h2 {
+  font-size: 1.5rem;
+  margin-left: 0;
+  padding-left: 0sss;
 }
 #settings-container .settings-label {
   padding-left: 0;
   margin-bottom: 1rem;
 }
 #settings-container .settings-input {
-  padding-left: 1rem !important;
+  padding: 0.5rem 1rem !important;
 }
 #settings-container .form-check-label {
   padding-left: 1rem;
 }
 
+.row + h2 {
+  padding-top: 2rem;
+}
+
 input.form-check-input:checked {
   background-color: var(--standard-blue);
   border-color: var(--standard-blue);
+}
+
+.react-colorful {
+  height: 100px !important;
+}
+
+.hidden {
+  opacity: 0;
 }
 
 #mainKeyboard {
@@ -100,6 +205,15 @@ input.form-check-input:checked {
   position: relative;
   padding-bottom: 8rem;
   z-index: 1;
+  text-align: center;
+  justify-content: center;
+  position: relative;
+}
+@media screen and (max-width: 600px) {
+  #mainKeyboard {
+    padding-left: 1rem;
+    padding-right: 0;
+  }
 }
 #mainKeyboard:after {
   content: "-";
@@ -113,8 +227,8 @@ input.form-check-input:checked {
   color: black;
   background-color: white;
   border: 1px solid #333;
-  padding-top: 10rem;
-  padding-bottom: 0.5rem;
+  padding-top: 8rem;
+  padding-bottom: 0.75rem;
   width: 4rem;
   border-radius: 0.5rem;
   margin-right: 0.25rem;
@@ -122,17 +236,24 @@ input.form-check-input:checked {
   vertical-align: bottom;
   cursor: pointer;
 }
+@media screen and (max-width: 600px) {
+  .piano-key {
+    width: 3rem;
+    font-size: 0.75rem;
+  }
+}
 .accidental-keys .piano-key {
-  padding-top: 5rem;
+  padding-top: 3rem;
   background-color: black;
   color: white;
 }
 .piano-key kbd {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  border: 3px outset #eee;
+  font-weight: 900;
 }
-
-.pressed {
-  background-color: hsl(200, 100%, 74%) !important;
+.piano-key p {
+  margin-bottom: 0.25rem;
 }
 
 .dummy-note {
@@ -152,24 +273,41 @@ input.form-check-input:checked {
 
 .main-keys {
   padding: 0 !important;
-  justify-content: space-around;
   display: flex;
   flex-flow: row nowrap;
   position: absolute;
 }
-
-.accidental-keys {
-  left: 4.125rem;
-}
-
+.switches-container kbd,
 .natural-keys kbd {
   background-color: #ccc;
   color: black;
 }
 
 .accidental-keys kbd {
-  background-color: #fff;
+  background-color: #ddd;
   color: black;
+}
+
+.switches-container kbd {
+  display: inline-block;
+  margin: 0.5rem auto;
+  border: 3px outset #eee;
+  font-weight: 900;
+}
+
+.switches-container span {
+  padding-top: 0.5rem;
+  display: inline-block;
+  line-height: 1 !important;
+}
+
+.pressed {
+  background-color: hsl(200, 100%, 74%) !important;
+}
+
+.pressed kbd {
+  border-width: 5px !important;
+  border-style: inset;
 }
 
 /*# sourceMappingURL=index.css.map */

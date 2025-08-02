@@ -10,6 +10,9 @@ function PianoTrainerHome(props) {
     const [includeFlats, setIncludeFlats] = useState(true);
     const [includeSharps, setIncludeSharps] = useState(true);
     const [includeNaturals, setIncludeNaturals] = useState(true);
+    const [correctColor, setCorrectColor] = useState("hsl(200, 100%, 40%)");
+    const [incorrectColor, setIncorrectColor] = useState('hsla(0, 100%, 50%, .3)')
+    const [neutralColor, setNeutralColor] = useState('#ffffff')
 
     const toggleIncludeNaturals = () => setIncludeNaturals(prev => !prev);
     const toggleIncludeFlats = () => setIncludeFlats(prev => !prev);
@@ -27,7 +30,13 @@ function PianoTrainerHome(props) {
                 includeSharps,
                 toggleIncludeSharps,
                 includeNaturals,
-                toggleIncludeNaturals
+                toggleIncludeNaturals,
+                correctColor,
+                setCorrectColor,
+                incorrectColor,
+                setIncorrectColor,
+                neutralColor,
+                setNeutralColor
             }}>
                 <Outlet />
             </PianoTrainerContext.Provider>
